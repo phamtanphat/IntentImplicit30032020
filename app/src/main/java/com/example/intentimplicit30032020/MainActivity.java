@@ -1,7 +1,6 @@
 package com.example.intentimplicit30032020;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 
 public class MainActivity extends AppCompatActivity {
