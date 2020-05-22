@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.imageview)
     ImageView mImage;
     Integer REQUEST_CODE_CAMERA = 123;
+    Integer REQUEST_CODE_GALLEY = 456;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +51,13 @@ public class MainActivity extends AppCompatActivity {
                     REQUEST_CODE_CAMERA
             );
         });
+        mBtnGallery.setOnClickListener(v -> {
+            ActivityCompat.requestPermissions(
+                    MainActivity.this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    REQUEST_CODE_GALLEY
+            );
+        });
     }
 
     @Override
@@ -60,6 +69,14 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent , REQUEST_CODE_CAMERA);
             }
         }
+        if (requestCode == REQUEST_CODE_GALLEY){
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_PICK);
+                intent.setType("image/*");
+                startActivityForResult(intent , REQUEST_CODE_GALLEY);
+            }
+        }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
@@ -68,6 +85,10 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == REQUEST_CODE_CAMERA && resultCode == RESULT_OK && data != null){
             Bitmap  bitmap  = (Bitmap) data.getExtras().get("data");
             mImage.setImageBitmap(bitmap);
+        }
+        if (requestCode ==  REQUEST_CODE_GALLEY && resultCode == RESULT_OK && data != null){
+            Uri uri = data.getData();
+            mImage.setImageURI(uri);
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
